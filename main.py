@@ -1,6 +1,7 @@
 import sys
 import os
 from os import path
+import re
 
 # replace folder path with where you have the gcp-enablement-content git folder
 gcp_enablement_content_folder="/Users/vj/coding/projects/gcp-enablement-content"
@@ -19,9 +20,11 @@ if not path.isfile(enmd_path):
     print('Folder does not contain an en.md file.')
     os._exit(1)
 
+title_pattern = re.compile("^## Task \d+\. [a-zA-Z0-9 ]*$")
+
 def to_titlecase(s):
-    exceptions=['a', 'an', 'of', 'the', 'is', 'be']
-    acronyms=['IAM']
+    exceptions=['a', 'an', 'of', 'the', 'is', 'be', 'by', 'it', 'in', 'on', 'as', 'to', 'was', 'for', 'at', 'and']
+    acronyms=['IAM', 'GCP', 'IDS', 'HTTP', 'HTTP(S)', 'HTTPS', 'NAT']
     word_list = s.split()
     final = [word_list[0].capitalize()]
     for word in word_list[1:]:
@@ -70,6 +73,8 @@ def check_line_format(line, n):
     elif line.startswith("## "):
         # h2
         if line.startswith("## Task"):
+            if not re.search(title_pattern, line):
+                print("Error! Line", n, ": Title not matching expected pattern. Should be like: ## Title 12. This is a Sample Title")
             #print("# task title")
             # todo: check if using dot after number.
             # todo: check if number is proper.
